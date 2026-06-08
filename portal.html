@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Galatasaray Club Management</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
+#loginPage{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#0f172a 0%,#1a0505 100%)}
+.login-card{background:#1e293b;border-radius:16px;padding:48px 40px;width:390px;box-shadow:0 25px 50px rgba(0,0,0,.6);border:1px solid #c8102e33}
+.login-logo{text-align:center;margin-bottom:32px}
+.login-logo .crest{font-size:48px;margin-bottom:8px}
+.login-logo h1{font-size:18px;font-weight:700;color:#c8102e}
+.login-logo p{color:#64748b;font-size:13px;margin-top:4px}
+.form-group{margin-bottom:18px}
+.form-group label{display:block;font-size:12px;color:#94a3b8;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.form-group input{width:100%;padding:11px 14px;background:#0f172a;border:1px solid #334155;border-radius:8px;color:#e2e8f0;font-size:14px;outline:none;transition:border-color .2s}
+.form-group input:focus{border-color:#c8102e}
+.btn-login{width:100%;padding:13px;background:#c8102e;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;transition:background .2s}
+.btn-login:hover{background:#a00d24}
+.login-error{color:#f87171;font-size:13px;text-align:center;margin-top:10px;display:none}
+.login-hint{margin-top:22px;padding:14px;background:#0f172a;border-radius:8px;border:1px solid #1e293b}
+.login-hint p{font-size:11px;color:#475569;margin-bottom:3px}
+.login-hint code{color:#f0c60d;font-size:11px}
+#app{display:none}
+.topbar{background:#1e293b;padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #c8102e44;position:sticky;top:0;z-index:100}
+.topbar-brand{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700;color:#c8102e}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.lang-toggle{display:flex;background:#0f172a;border-radius:6px;overflow:hidden;border:1px solid #334155}
+.lang-btn{padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;border:none;background:transparent;color:#64748b;transition:all .15s}
+.lang-btn.active{background:#c8102e;color:#fff}
+.role-badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.role-ADMIN{background:#7c3aed22;color:#a78bfa;border:1px solid #7c3aed44}
+.role-TECHNICAL_DIRECTOR{background:#c8102e22;color:#f87171;border:1px solid #c8102e44}
+.role-ASSISTANT_COACH{background:#15803d22;color:#4ade80;border:1px solid #15803d44}
+.role-PLAYER{background:#f0c60d22;color:#f0c60d;border:1px solid #f0c60d44}
+.top-user{font-size:12px;color:#94a3b8}
+.btn-logout{padding:5px 12px;background:transparent;border:1px solid #475569;color:#94a3b8;border-radius:6px;cursor:pointer;font-size:12px;transition:all .2s}
+.btn-logout:hover{border-color:#f87171;color:#f87171}
+.layout{display:flex;min-height:calc(100vh - 56px)}
+.sidebar{width:210px;background:#1e293b;border-right:1px solid #0f172a;padding:12px 0;flex-shrink:0}
+.nav-section{padding:10px 16px 4px;font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:1px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 16px;cursor:pointer;font-size:13px;color:#94a3b8;transition:all .15s;border-left:3px solid transparent}
+.nav-item:hover{background:#0f172a66;color:#e2e8f0}
+.nav-item.active{background:#c8102e11;color:#c8102e;border-left-color:#c8102e}
+.nav-icon{font-size:15px;width:18px;text-align:center}
+.content{flex:1;padding:24px;overflow-y:auto}
+.page{display:none}.page.active{display:block}
+.page-title{font-size:20px;font-weight:700;margin-bottom:4px}
+.page-sub{color:#64748b;font-size:13px;margin-bottom:20px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:20px}
+.stat-card{background:#1e293b;border-radius:10px;padding:18px;border:1px solid #334155}
+.sc-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.sc-label{font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.5px}
+.sc-icon{font-size:18px}
+.sc-val{font-size:26px;font-weight:700}
+.sc-sub{font-size:11px;color:#64748b;margin-top:3px}
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:900px){.dash-grid{grid-template-columns:1fr}}
+.dash-box{background:#1e293b;border-radius:10px;border:1px solid #334155;overflow:hidden}
+.dash-box-head{padding:12px 16px;border-bottom:1px solid #334155;font-size:14px;font-weight:600}
+.dash-box-body{padding:14px 16px}
+.dash-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #0f172a55}
+.dash-item:last-child{border-bottom:none}
+.dash-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.dash-info{flex:1}
+.dash-title{font-size:13px;font-weight:500}
+.dash-sub{font-size:11px;color:#64748b;margin-top:2px}
+.empty-state{text-align:center;padding:24px;color:#475569;font-size:13px}
+.table-wrap{background:#1e293b;border-radius:10px;border:1px solid #334155;overflow:hidden;margin-bottom:20px}
+.table-head{padding:14px 18px;border-bottom:1px solid #334155;display:flex;justify-content:space-between;align-items:center}
+.table-head h3{font-size:14px;font-weight:600}
+table{width:100%;border-collapse:collapse}
+th{padding:10px 14px;text-align:left;font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #334155;white-space:nowrap}
+td{padding:11px 14px;font-size:13px;border-bottom:1px solid #1e293b;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#0f172a22}
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
+.bg{background:#15803d22;color:#4ade80}.bb{background:#0369a122;color:#38bdf8}.by{background:#a1620022;color:#fbbf24}.br{background:#9b1c1c22;color:#f87171}.bgr{background:#33415522;color:#94a3b8}
+.btn{padding:8px 16px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:600;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:#c8102e;color:#fff}.btn-primary:hover{background:#a00d24}
+.btn-gold{background:#f0c60d;color:#0f172a}.btn-gold:hover{background:#d4af0b}
+.btn-ghost{background:transparent;border:1px solid #334155;color:#94a3b8}.btn-ghost:hover{border-color:#c8102e;color:#c8102e}
+.btn-green{background:#15803d22;color:#4ade80;border:1px solid #15803d44}.btn-green:hover{background:#15803d44}
+.btn-red{background:#9b1c1c22;color:#f87171;border:1px solid #9b1c1c44}
+.btn-sm{padding:5px 10px;font-size:11px}
+.players-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.player-card{background:#1e293b;border-radius:10px;border:1px solid #334155;padding:18px;text-align:center;transition:all .2s;cursor:pointer}
+.player-card:hover{border-color:#c8102e;transform:translateY(-2px);box-shadow:0 6px 20px #c8102e22}
+.player-ctx-menu{position:fixed;background:#1e293b;border:1px solid #c8102e;border-radius:10px;padding:6px 0;min-width:190px;z-index:9999;box-shadow:0 8px 28px #0009;display:none}
+.player-ctx-menu .ctx-header{padding:8px 14px 6px;border-bottom:1px solid #334155;margin-bottom:4px}
+.player-ctx-menu .ctx-name{font-size:.82rem;font-weight:700;color:#f1f5f9}
+.player-ctx-menu .ctx-sub{font-size:.72rem;color:#94a3b8}
+.player-ctx-menu button{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:8px 14px;background:none;border:none;color:#e2e8f0;font-size:.83rem;cursor:pointer;transition:background .15s}
+.player-ctx-menu button:hover{background:#c8102e22;color:#fff}
+.player-ctx-menu .ctx-divider{height:1px;background:#334155;margin:4px 0}
+.pos-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.pos-filter-btn{padding:5px 14px;border-radius:20px;border:1px solid #334155;background:#1e293b;color:#94a3b8;font-size:.78rem;cursor:pointer;transition:all .15s}
+.pos-filter-btn.active{background:#c8102e;border-color:#c8102e;color:#fff;font-weight:600}
+.player-avatar{width:64px;height:64px;border-radius:50%;margin:0 auto 10px;object-fit:cover;border:2px solid #c8102e44}
+.player-jersey{display:inline-block;background:#c8102e;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;margin-bottom:6px}
+.player-name{font-size:13px;font-weight:600;margin-bottom:4px}
+.player-pos{font-size:11px;margin-bottom:8px}
+.player-stats{display:flex;justify-content:center;gap:12px;font-size:10px;color:#64748b}
+.player-stats span{display:flex;flex-direction:column;align-items:center;gap:2px}
+.player-stats strong{font-size:12px;color:#e2e8f0}
+.week-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;background:#1e293b;padding:12px 16px;border-radius:10px;border:1px solid #334155}
+.week-label{font-size:14px;font-weight:600}
+.cal-wrap{overflow-x:auto;border-radius:10px;border:1px solid #334155}
+.meal-cal{width:100%;border-collapse:collapse;min-width:720px;background:#1e293b}
+.meal-cal th{padding:10px 8px;text-align:center;font-size:11px;border-bottom:1px solid #334155;background:#0f172a;white-space:nowrap}
+.meal-cal .row-label{padding:10px 12px;font-size:11px;font-weight:600;color:#94a3b8;white-space:nowrap;background:#0f172a33;border-right:1px solid #334155;vertical-align:top}
+.meal-cal td{padding:8px;border-bottom:1px solid #334155;border-right:1px solid #1e293b;vertical-align:top;min-width:100px}
+.meal-cal td.today-col{background:#c8102e08}
+.meal-cal th.today-col{background:#c8102e15;color:#c8102e}
+.cell-desc{font-size:11px;line-height:1.4;color:#cbd5e1}
+.cell-kcal{font-size:10px;color:#64748b;margin-top:3px}
+.cell-empty{color:#334155;font-size:12px;text-align:center;padding:4px}
+#modalOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:999;align-items:center;justify-content:center}
+#modalOverlay.open{display:flex}
+.modal-card{background:#1e293b;border-radius:14px;border:1px solid #334155;width:90%;max-width:520px;max-height:90vh;overflow-y:auto}
+.modal-header{padding:18px 20px;border-bottom:1px solid #334155;display:flex;justify-content:space-between;align-items:center}
+.modal-header h3{font-size:15px;font-weight:600}
+.modal-close{background:none;border:none;color:#64748b;font-size:20px;cursor:pointer;line-height:1}
+.modal-close:hover{color:#f87171}
+.modal-body{padding:20px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;color:#94a3b8;margin-bottom:5px}
+.field input,.field select,.field textarea{width:100%;padding:9px 12px;background:#0f172a;border:1px solid #334155;border-radius:7px;color:#e2e8f0;font-size:13px;outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#c8102e}
+.field select option{background:#1e293b}
+.field textarea{resize:vertical;min-height:80px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-acts{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.ann-card{background:#1e293b;border-radius:10px;border:1px solid #334155;margin-bottom:14px;overflow:hidden}
+.ann-head{padding:14px 18px;border-bottom:1px solid #334155;display:flex;align-items:center;gap:8px;font-weight:600}
+.ann-body{padding:14px 18px}
+.ann-body p{font-size:14px;color:#cbd5e1;line-height:1.6}
+.ann-meta{font-size:11px;color:#475569;margin-top:10px}
+.toast{position:fixed;bottom:20px;right:20px;padding:12px 18px;border-radius:8px;font-size:13px;font-weight:500;z-index:9999;display:none;animation:fadeUp .3s}
+.toast.ok{background:#15803d;color:#fff}
+.toast.err{background:#c8102e;color:#fff}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.loading-box{text-align:center;padding:40px;color:#475569}
+.spin{display:inline-block;width:18px;height:18px;border:2px solid #334155;border-top-color:#c8102e;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div id="loginPage">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="crest">⚽</div>
+      <h1 id="lTitle">Galatasaray Kulüp Yönetimi</h1>
+      <p id="lSub">Futbol Kulübü Yönetim Paneli</p>
+    </div>
+    <div class="form-group">
+      <label id="lUser">Kullanıcı Adı</label>
+      <input type="text" id="loginUser" value="admin">
+    </div>
+    <div class="form-group">
+      <label id="lPass">Şifre</label>
+      <input type="password" id="loginPass" value="admin123">
+    </div>
+    <button class="btn-login" id="lBtn" onclick="doLogin()">Giriş Yap</button>
+    <div class="login-error" id="loginErr">Kullanıcı adı veya şifre hatalı.</div>
+    <div class="login-hint">
+      <p style="font-weight:600;margin-bottom:6px" id="lHint">Test Hesapları:</p>
+      <p><code>admin / admin123</code> — Admin</p>
+      <p><code>terim.fatih / terim123</code> — Teknik Direktör</p>
+      <p><code>ercan.abdullah / assist123</code> — Asistan</p>
+      <p><code>muslera.fernando / player123</code> — Oyuncu</p>
+      <p><code>icardi.mauro / player123</code> — Oyuncu</p>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-brand">⚽ <span id="brandName">Galatasaray Kulüp Yönetimi</span></div>
+    <div class="topbar-right">
+      <div class="lang-toggle">
+        <button class="lang-btn active" id="btnTR" onclick="setLang('TR')">TR</button>
+        <button class="lang-btn" id="btnEN" onclick="setLang('EN')">EN</button>
+      </div>
+      <span class="top-user" id="topUser"></span>
+      <span class="role-badge" id="topRole"></span>
+      <button class="btn-logout" id="btnLogout" onclick="doLogout()">Çıkış</button>
+    </div>
+  </div>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="nav-section" data-i18n="nav_general">Genel</div>
+      <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="nav-icon">🏠</span><span data-i18n="nav_dashboard">Ana Sayfa</span></div>
+      <div class="nav-section" data-i18n="nav_football">Futbol</div>
+      <div class="nav-item" onclick="showPage('matches',this)"><span class="nav-icon">🏟️</span><span data-i18n="nav_matches">Maçlar</span></div>
+      <div class="nav-item" onclick="showPage('training',this)"><span class="nav-icon">🏃</span><span data-i18n="nav_training">Antrenmanlar</span></div>
+      <div class="nav-item" onclick="showPage('players',this)"><span class="nav-icon">👥</span><span data-i18n="nav_players">Oyuncular</span></div>
+      <div class="nav-section" data-i18n="nav_daily">Günlük</div>
+      <div class="nav-item" onclick="showPage('meals',this)"><span class="nav-icon">🍽️</span><span data-i18n="nav_meals">Yemek Planı</span></div>
+      <div class="nav-item" onclick="showPage('announcements',this)"><span class="nav-icon">📢</span><span data-i18n="nav_announcements">Duyurular</span></div>
+      <div class="nav-section" data-i18n="nav_management">Yönetim</div>
+      <div class="nav-item" onclick="showPage('tasks',this)"><span class="nav-icon">✅</span><span data-i18n="nav_tasks">Görevler</span></div>
+      <div class="nav-item" onclick="showPage('injuries',this)"><span class="nav-icon">🩹</span><span data-i18n="nav_injuries">Sakatlıklar</span></div>
+      <div class="nav-item" onclick="showPage('leaves',this)"><span class="nav-icon">📝</span><span data-i18n="nav_leaves">İzin Talepleri</span></div>
+      <div class="nav-item" id="navUsers" style="display:none" onclick="showPage('users',this)"><span class="nav-icon">⚙️</span><span data-i18n="nav_users">Kullanıcılar</span></div>
+    </div>
+    <div class="content">
+      <div class="page active" id="page-dashboard"></div>
+      <div class="page" id="page-matches"></div>
+      <div class="page" id="page-training"></div>
+      <div class="page" id="page-players"></div>
+      <div class="page" id="page-meals"></div>
+      <div class="page" id="page-announcements"></div>
+      <div class="page" id="page-tasks"></div>
+      <div class="page" id="page-injuries"></div>
+      <div class="page" id="page-leaves"></div>
+      <div class="page" id="page-users"></div>
+    </div>
+  </div>
+</div>
+
+<div id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal-card">
+    <div class="modal-header"><h3 id="modalTitle"></h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ── i18n ──────────────────────────────────────────────
+const TR={
+  app_name:'Galatasaray Kulüp Yönetimi',login_sub:'Futbol Kulübü Yönetim Paneli',
+  login_user:'Kullanıcı Adı',login_pass:'Şifre',login_btn:'Giriş Yap',
+  login_err:'Kullanıcı adı veya şifre hatalı.',login_hint:'Test Hesapları',
+  btn_logout:'Çıkış',btn_save:'Kaydet',btn_cancel:'İptal',loading:'Yükleniyor...',no_data:'Veri bulunamadı',
+  nav_general:'Genel',nav_football:'Futbol',nav_daily:'Günlük',nav_management:'Yönetim',
+  nav_dashboard:'Ana Sayfa',nav_matches:'Maçlar',nav_training:'Antrenmanlar',nav_players:'Oyuncular',
+  nav_meals:'Yemek Planı',nav_announcements:'Duyurular',nav_tasks:'Görevler',
+  nav_injuries:'Sakatlıklar',nav_leaves:'İzin Talepleri',nav_users:'Kullanıcılar',
+  dash_squad:'Kadro',dash_upcoming:'Yaklaşan Maç',dash_training:'Bugün Antrenman',dash_meals:'Bugün Öğün',dash_anns:'Son Duyurular',
+  dash_no_match:'Yaklaşan maç yok',dash_no_train:'Bugün antrenman yok',dash_no_meal:'Bugün menü eklenmemiş',
+  match_add:'+ Maç Ekle',match_opp:'Rakip',match_date:'Tarih & Saat',match_venue:'Saha',match_comp:'Lig/Kupa',
+  match_type:'Tür',match_home:'Ev Sahibi',match_away:'Deplasman',match_status:'Durum',match_score:'Skor',match_none:'Yaklaşan maç yok',
+  train_add:'+ Antrenman Ekle',train_date:'Tarih',train_start:'Başlangıç',train_end:'Bitiş',
+  train_loc:'Konum',train_focus:'Odak',train_int:'Yoğunluk',train_notes:'Notlar',
+  play_jersey:'Forma',play_pos:'Pozisyon',play_nat:'Milliyet',play_cond:'Kondisyon',
+  play_upd:'Kondisyon Güncelle',play_h:'Boy',play_w:'Kilo',
+  meal_add:'+ Öğün Ekle',meal_prev:'← Önceki Hafta',meal_next:'Sonraki Hafta →',
+  meal_date:'Tarih',meal_type:'Öğün',meal_menu:'Menü',meal_kcal:'kcal',meal_alg:'Alerjen',
+  ann_new:'+ Duyuru',ann_title:'Başlık',ann_content:'İçerik',ann_target:'Hedef Rol (Boş=Herkes)',ann_pin:'Sabitle',
+  task_assign:'+ Görev Ata',task_player:'Oyuncu',task_title:'Başlık',task_desc:'Açıklama',
+  task_due:'Son Tarih',task_complete:'✓ Tamamlandı',task_upd:'Durum',
+  inj_report:'+ Sakatlık Bildir',inj_player:'Oyuncu',inj_type:'Tür',inj_body:'Bölge',
+  inj_date:'Tarih',inj_ret:'Tahmini Dönüş',inj_desc:'Açıklama',inj_upd:'Durum Güncelle',
+  leave_apply:'+ İzin Talebi',leave_reason:'Gerekçe',leave_start:'Başlangıç',leave_end:'Bitiş',
+  leave_review:'İncele',leave_approve:'Onayla',leave_reject:'Reddet',leave_note:'Not',
+  s_SCHEDULED:'Planlandı',s_PLAYED:'Oynandı',s_CANCELLED:'İptal',s_POSTPONED:'Ertelendi',
+  s_PENDING:'Bekliyor',s_APPROVED:'Onaylandı',s_REJECTED:'Reddedildi',
+  s_ACTIVE:'Aktif',s_UNDER_TREATMENT:'Tedavide',s_RECOVERED:'İyileşti',
+  s_IN_PROGRESS:'Devam Ediyor',s_COMPLETED:'Tamamlandı',
+  p_GOALKEEPER:'Kaleci',p_DEFENDER:'Defans',p_MIDFIELDER:'Orta Saha',p_FORWARD:'Forvet',
+  i_LOW:'Düşük',i_MEDIUM:'Orta',i_HIGH:'Yüksek',
+  f_TACTICAL:'Taktik',f_PHYSICAL:'Fiziksel',f_TECHNICAL:'Teknik',f_RECOVERY:'Toparlanma',f_SET_PIECES:'Sabit Toplar',
+  mt_BREAKFAST:'Kahvaltı',mt_LUNCH:'Öğle',mt_DINNER:'Akşam',mt_SNACK:'Ara Öğün',
+  d0:'Pzt',d1:'Sal',d2:'Çar',d3:'Per',d4:'Cum',d5:'Cmt',d6:'Paz',
+  m0:'Oca',m1:'Şub',m2:'Mar',m3:'Nis',m4:'May',m5:'Haz',m6:'Tem',m7:'Ağu',m8:'Eyl',m9:'Eki',m10:'Kas',m11:'Ara'
+};
+const EN={
+  app_name:'Galatasaray Club Management',login_sub:'Football Club Management Portal',
+  login_user:'Username',login_pass:'Password',login_btn:'Login',
+  login_err:'Invalid username or password.',login_hint:'Test Accounts',
+  btn_logout:'Logout',btn_save:'Save',btn_cancel:'Cancel',loading:'Loading...',no_data:'No data found',
+  nav_general:'General',nav_football:'Football',nav_daily:'Daily',nav_management:'Management',
+  nav_dashboard:'Dashboard',nav_matches:'Matches',nav_training:'Training',nav_players:'Players',
+  nav_meals:'Meal Plan',nav_announcements:'Announcements',nav_tasks:'Tasks',
+  nav_injuries:'Injuries',nav_leaves:'Leave Requests',nav_users:'Users',
+  dash_squad:'Squad',dash_upcoming:'Upcoming Match',dash_training:'Today Training',dash_meals:'Today Meals',dash_anns:'Announcements',
+  dash_no_match:'No upcoming matches',dash_no_train:'No training today',dash_no_meal:'No meals added for today',
+  match_add:'+ Add Match',match_opp:'Opponent',match_date:'Date & Time',match_venue:'Venue',match_comp:'League/Cup',
+  match_type:'Type',match_home:'Home',match_away:'Away',match_status:'Status',match_score:'Score',match_none:'No upcoming matches',
+  train_add:'+ Add Training',train_date:'Date',train_start:'Start',train_end:'End',
+  train_loc:'Location',train_focus:'Focus',train_int:'Intensity',train_notes:'Notes',
+  play_jersey:'Jersey',play_pos:'Position',play_nat:'Nationality',play_cond:'Condition',
+  play_upd:'Update Condition',play_h:'Height',play_w:'Weight',
+  meal_add:'+ Add Meal',meal_prev:'← Previous Week',meal_next:'Next Week →',
+  meal_date:'Date',meal_type:'Meal',meal_menu:'Menu',meal_kcal:'kcal',meal_alg:'Allergens',
+  ann_new:'+ Announcement',ann_title:'Title',ann_content:'Content',ann_target:'Target Role (empty=all)',ann_pin:'Pin',
+  task_assign:'+ Assign Task',task_player:'Player',task_title:'Title',task_desc:'Description',
+  task_due:'Due Date',task_complete:'✓ Complete',task_upd:'Status',
+  inj_report:'+ Report Injury',inj_player:'Player',inj_type:'Type',inj_body:'Body Part',
+  inj_date:'Date',inj_ret:'Expected Return',inj_desc:'Description',inj_upd:'Update Status',
+  leave_apply:'+ Apply for Leave',leave_reason:'Reason',leave_start:'Start Date',leave_end:'End Date',
+  leave_review:'Review',leave_approve:'Approve',leave_reject:'Reject',leave_note:'Note',
+  s_SCHEDULED:'Scheduled',s_PLAYED:'Played',s_CANCELLED:'Cancelled',s_POSTPONED:'Postponed',
+  s_PENDING:'Pending',s_APPROVED:'Approved',s_REJECTED:'Rejected',
+  s_ACTIVE:'Active',s_UNDER_TREATMENT:'Under Treatment',s_RECOVERED:'Recovered',
+  s_IN_PROGRESS:'In Progress',s_COMPLETED:'Completed',
+  p_GOALKEEPER:'Goalkeeper',p_DEFENDER:'Defender',p_MIDFIELDER:'Midfielder',p_FORWARD:'Forward',
+  i_LOW:'Low',i_MEDIUM:'Medium',i_HIGH:'High',
+  f_TACTICAL:'Tactical',f_PHYSICAL:'Physical',f_TECHNICAL:'Technical',f_RECOVERY:'Recovery',f_SET_PIECES:'Set Pieces',
+  mt_BREAKFAST:'Breakfast',mt_LUNCH:'Lunch',mt_DINNER:'Dinner',mt_SNACK:'Snack',
+  d0:'Mon',d1:'Tue',d2:'Wed',d3:'Thu',d4:'Fri',d5:'Sat',d6:'Sun',
+  m0:'Jan',m1:'Feb',m2:'Mar',m3:'Apr',m4:'May',m5:'Jun',m6:'Jul',m7:'Aug',m8:'Sep',m9:'Oct',m10:'Nov',m11:'Dec'
+};
+
+// ── State ─────────────────────────────────
+const API='http://localhost:8080';
+let token='',currentUser=null,lang='TR',currentPage='dashboard';
+let mealWeekOffset=0,allMealsCache=null,allPlayersCache=null;
+
+const t=k=>(lang==='TR'?TR:EN)[k]||k;
+
+function applyLang(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.dataset.i18n; if(t(k)!==k) el.textContent=t(k); });
+  document.getElementById('brandName').textContent=t('app_name');
+  document.getElementById('lTitle').textContent=t('app_name');
+  document.getElementById('lSub').textContent=t('login_sub');
+  document.getElementById('lUser').textContent=t('login_user');
+  document.getElementById('lPass').textContent=t('login_pass');
+  document.getElementById('lBtn').textContent=t('login_btn');
+  document.getElementById('btnLogout').textContent=t('btn_logout');
+  document.getElementById('loginErr').textContent=t('login_err');
+  document.getElementById('lHint').textContent=t('login_hint')+':';
+  document.getElementById('btnTR').classList.toggle('active',lang==='TR');
+  document.getElementById('btnEN').classList.toggle('active',lang==='EN');
+  if(currentUser) loadPage(currentPage);
+}
+function setLang(l){ lang=l; applyLang(); }
+
+// ── API ───────────────────────────────────
+async function api(method,path,body){
+  const r=await fetch(API+path,{method,headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},body:body?JSON.stringify(body):undefined});
+  return r.json();
+}
+function toast(msg,err=false){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='toast '+(err?'err':'ok'); el.style.display='block';
+  setTimeout(()=>el.style.display='none',3200);
+}
+
+// ── Auth ──────────────────────────────────
+document.getElementById('loginPass').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
+
+async function doLogin(){
+  const u=document.getElementById('loginUser').value;
+  const p=document.getElementById('loginPass').value;
+  const errEl=document.getElementById('loginErr'); errEl.style.display='none';
+  try{
+    const r=await api('POST','/api/auth/login',{username:u,password:p});
+    if(!r.success){ errEl.style.display='block'; return; }
+    token=r.data.token; currentUser=r.data;
+    document.getElementById('topUser').textContent=currentUser.username;
+    const rb=document.getElementById('topRole');
+    rb.textContent=currentUser.role.replace(/_/g,' ');
+    rb.className='role-badge role-'+currentUser.role;
+    if(currentUser.role==='ADMIN') document.getElementById('navUsers').style.display='flex';
+    document.getElementById('loginPage').style.display='none';
+    document.getElementById('app').style.display='block';
+    allMealsCache=null; allPlayersCache=null;
+    showPage('dashboard',document.querySelector('.nav-item'));
+  }catch(e){ errEl.style.display='block'; }
+}
+
+function doLogout(){
+  token=''; currentUser=null; allMealsCache=null; allPlayersCache=null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('loginPage').style.display='flex';
+  document.getElementById('navUsers').style.display='none';
+}
+
+// ── Nav ───────────────────────────────────
+function showPage(name,el){
+  currentPage=name;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  loadPage(name);
+}
+function loadPage(name){
+  ({dashboard:loadDashboard,matches:loadMatches,training:loadTraining,players:loadPlayers,
+    meals:loadMeals,announcements:loadAnnouncements,tasks:loadTasks,injuries:loadInjuries,
+    leaves:loadLeaves,users:loadUsers})[name]?.();
+}
+
+// ── Modal ─────────────────────────────────
+function openModal(title,html){
+  document.getElementById('modalTitle').textContent=title;
+  document.getElementById('modalBody').innerHTML=html;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); }
+
+// ── Helpers ───────────────────────────────
+function fmtDate(s){ if(!s)return '—'; try{ return new Date(s).toLocaleDateString(lang==='TR'?'tr-TR':'en-GB',{day:'2-digit',month:'short',year:'numeric'}); }catch(e){ return s; } }
+function fmtDT(s){ if(!s)return '—'; try{ return new Date(s).toLocaleString(lang==='TR'?'tr-TR':'en-GB',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); }catch(e){ return s; } }
+function toDateKey(d){ return d.toISOString().split('T')[0]; }
+function getWeekDates(off){ const today=new Date(),day=today.getDay(),mon=new Date(today); mon.setDate(today.getDate()-(day===0?6:day-1)+off*7); mon.setHours(0,0,0,0); return Array.from({length:7},(_,i)=>{ const d=new Date(mon); d.setDate(mon.getDate()+i); return d; }); }
+function today(){ return toDateKey(new Date()); }
+
+function badge(cls,label){ return `<span class="badge ${cls}">${label}</span>`; }
+function mBadge(s){ const m={SCHEDULED:['bb'],PLAYED:['bg'],CANCELLED:['br'],POSTPONED:['by']}; return badge((m[s]||['bgr'])[0],t('s_'+s)||s); }
+function tBadge(s){ const m={PENDING:'by',IN_PROGRESS:'bb',COMPLETED:'bg',CANCELLED:'br'}; return badge(m[s]||'bgr',t('s_'+s)||s); }
+function iBadge(s){ const m={ACTIVE:'br',UNDER_TREATMENT:'by',RECOVERED:'bg'}; return badge(m[s]||'bgr',t('s_'+s)||s); }
+function lBadge(s){ const m={PENDING:'by',APPROVED:'bg',REJECTED:'br'}; return badge(m[s]||'bgr',t('s_'+s)||s); }
+function pBadge(p){ const m={GOALKEEPER:'bb',DEFENDER:'bg',MIDFIELDER:'by',FORWARD:'br'}; return badge(m[p]||'bgr',t('p_'+p)||p); }
+function stars(r){ return r?'⭐'.repeat(r)+'☆'.repeat(5-r):'—'; }
+function avatarUrl(fn,ln){ return `https://ui-avatars.com/api/?name=${encodeURIComponent(fn+'+'+ln)}&background=c8102e&color=fff&size=128&bold=true`; }
+function canManage(){ return ['ADMIN','TECHNICAL_DIRECTOR'].includes(currentUser?.role); }
+function canCoach(){ return ['ADMIN','TECHNICAL_DIRECTOR','ASSISTANT_COACH'].includes(currentUser?.role); }
+function isPlayer(){ return currentUser?.role==='PLAYER'; }
+
+async function getPlayers(){
+  if(allPlayersCache) return allPlayersCache;
+  const r=await api('GET','/api/players?size=100');
+  allPlayersCache=(r.data?.content)||[]; return allPlayersCache;
+}
+
+// ── DASHBOARD ─────────────────────────────
+async function loadDashboard(){
+  const el=document.getElementById('page-dashboard');
+  el.innerHTML=`<div class="page-title">${t('nav_dashboard')}</div><div class="loading-box"><span class="spin"></span>${t('loading')}</div>`;
+  try{
+    const [dR,mR,pR]=await Promise.all([api('GET','/api/dashboard'),api('GET','/api/matches/upcoming'),api('GET','/api/players?size=100')]);
+    const d=dR.data||{},ups=mR.data||[],total=pR.data?.totalElements||0;
+    const trains=d.todayTrainingSessions||[],meals=d.todayMeals||[],anns=d.recentAnnouncements||[],next=ups[0];
+    el.innerHTML=`
+      <div class="page-title">${t('nav_dashboard')}</div>
+      <div class="page-sub">${new Date().toLocaleDateString(lang==='TR'?'tr-TR':'en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="sc-header"><span class="sc-label">${t('dash_upcoming')}</span><span class="sc-icon">🏟️</span></div><div class="sc-val">${ups.length}</div><div class="sc-sub">${lang==='TR'?'maç':'matches'}</div></div>
+        <div class="stat-card"><div class="sc-header"><span class="sc-label">${t('dash_squad')}</span><span class="sc-icon">👥</span></div><div class="sc-val">${total}</div><div class="sc-sub">${lang==='TR'?'oyuncu':'players'}</div></div>
+        <div class="stat-card"><div class="sc-header"><span class="sc-label">${t('dash_training')}</span><span class="sc-icon">🏃</span></div><div class="sc-val">${trains.length}</div><div class="sc-sub">${lang==='TR'?'seans':'sessions'}</div></div>
+        <div class="stat-card"><div class="sc-header"><span class="sc-label">${t('dash_meals')}</span><span class="sc-icon">🍽️</span></div><div class="sc-val">${meals.length}</div><div class="sc-sub">${lang==='TR'?'öğün':'meals'}</div></div>
+      </div>
+      <div class="dash-grid">
+        <div class="dash-box"><div class="dash-box-head">🏟️ ${t('dash_upcoming')}</div><div class="dash-box-body">
+          ${next?`<div class="dash-item"><div class="dash-icon" style="background:#c8102e22">🏆</div><div class="dash-info"><div class="dash-title">vs ${next.opponent}</div><div class="dash-sub">${fmtDT(next.matchDate)} · ${next.venueType==='HOME'?'🏠 '+t('match_home'):'✈️ '+t('match_away')} · ${next.competition||''}</div></div></div>`:`<div class="empty-state">${t('dash_no_match')}</div>`}
+        </div></div>
+        <div class="dash-box"><div class="dash-box-head">🏃 ${t('dash_training')}</div><div class="dash-box-body">
+          ${trains.length?trains.map(tr=>`<div class="dash-item"><div class="dash-icon" style="background:#15803d22">⚡</div><div class="dash-info"><div class="dash-title">${t('f_'+tr.focus)||tr.focus} — ${t('i_'+tr.intensity)}</div><div class="dash-sub">${tr.startTime} - ${tr.endTime} · ${tr.location}</div></div></div>`).join(''):`<div class="empty-state">${t('dash_no_train')}</div>`}
+        </div></div>
+        <div class="dash-box"><div class="dash-box-head">🍽️ ${t('dash_meals')}</div><div class="dash-box-body">
+          ${meals.length?meals.map(m=>`<div class="dash-item"><div class="dash-icon" style="background:#a1620022">${{BREAKFAST:'☀️',LUNCH:'🌞',DINNER:'🌙',SNACK:'🍎'}[m.mealType]||'🍽️'}</div><div class="dash-info"><div class="dash-title">${t('mt_'+m.mealType)}</div><div class="dash-sub">${m.menuDescription}${m.caloricValue?' · '+m.caloricValue+' kcal':''}</div></div></div>`).join(''):`<div class="empty-state">${t('dash_no_meal')}</div>`}
+        </div></div>
+        <div class="dash-box"><div class="dash-box-head">📢 ${t('dash_anns')}</div><div class="dash-box-body">
+          ${anns.length?anns.slice(0,3).map(a=>`<div class="dash-item"><div class="dash-icon" style="background:#7c3aed22">${a.pinned?'📌':'📣'}</div><div class="dash-info"><div class="dash-title">${a.title}</div><div class="dash-sub">${a.createdByUsername||''} · ${fmtDate(a.createdAt)}</div></div></div>`).join(''):`<div class="empty-state">${t('no_data')}</div>`}
+        </div></div>
+      </div>`;
+  }catch(e){ document.getElementById('page-dashboard').innerHTML='<div class="empty-state">Veriler yüklenemedi</div>'; }
+}
+
+// ── MATCHES ───────────────────────────────
+async function loadMatches(){
+  const el=document.getElementById('page-matches');
+  el.innerHTML=`<div class="page-title">${t('nav_matches')}</div><div class="loading-box"><span class="spin"></span>${t('loading')}</div>`;
+  try{
+    const r=await api('GET','/api/matches?size=100&sortBy=matchDate');
+    const items=(r.data?.content)||[];
+    const ups=items.filter(m=>m.status==='SCHEDULED'),past=items.filter(m=>m.status!=='SCHEDULED');
+    el.innerHTML=`
+      <div class="page-title">${t('nav_matches')}</div>
+      <div class="page-sub">Galatasaray ${lang==='TR'?'maç programı':'match schedule'}</div>
+      ${canManage()?`<div style="margin-bottom:16px"><button class="btn btn-primary" onclick="openAddMatchModal()">${t('match_add')}</button></div>`:''}
+      ${ups.length===0?`<div class="table-wrap"><div class="table-head"><h3>📅 ${t('match_none')}</h3></div></div>`:`
+      <div class="table-wrap"><div class="table-head"><h3>📅 ${lang==='TR'?'Yaklaşan Maçlar':'Upcoming Matches'} (${ups.length})</h3></div>
+      <table><tr><th>${t('match_opp')}</th><th>${t('match_date')}</th><th>${t('match_venue')}</th><th>${t('match_comp')}</th><th>${t('match_type')}</th><th>${t('match_status')}</th></tr>
+      ${ups.map(m=>`<tr><td><strong>vs ${m.opponent}</strong></td><td>${fmtDT(m.matchDate)}</td><td>${m.venue||'—'}</td><td>${m.competition||'—'}</td><td>${m.venueType==='HOME'?'🏠 '+t('match_home'):'✈️ '+t('match_away')}</td><td>${mBadge(m.status)}</td></tr>`).join('')}
+      </table></div>`}
+      ${past.length?`<div class="table-wrap" style="margin-top:16px"><div class="table-head"><h3>📊 ${lang==='TR'?'Geçmiş Maçlar':'Past Matches'} (${past.length})</h3></div>
+      <table><tr><th>${t('match_opp')}</th><th>${t('match_date')}</th><th>${t('match_comp')}</th><th>${t('match_type')}</th><th>${t('match_score')}</th><th>${t('match_status')}</th></tr>
+      ${past.map(m=>`<tr><td><strong>vs ${m.opponent}</strong></td><td>${fmtDT(m.matchDate)}</td><td>${m.competition||'—'}</td><td>${m.venueType==='HOME'?'🏠':'✈️'} ${t('match_'+m.venueType.toLowerCase())}</td><td>${m.homeScore!=null?m.homeScore+' - '+m.awayScore:'—'}</td><td>${mBadge(m.status)}</td></tr>`).join('')}
+      </table></div>`:''}`;
+  }catch(e){ el.innerHTML='<div class="empty-state">Hata</div>'; }
+}
+
+function openAddMatchModal(){
+  openModal(t('match_add'),`<div class="modal-body"><form onsubmit="submitAddMatch(event)">
+    <div class="field"><label>${t('match_opp')}</label><input name="opponent" required placeholder="${lang==='TR'?'Fenerbahçe, Beşiktaş...':'Rival team...'}"></div>
+    <div class="form-row">
+      <div class="field"><label>${lang==='TR'?'Tarih':'Date'}</label><input type="date" name="matchDate" required value="${today()}"></div>
+      <div class="field"><label>${lang==='TR'?'Saat':'Time'}</label><input type="time" name="matchTime" required value="20:00"></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>${t('match_venue')}</label><input name="venue" placeholder="RAMS Park"></div>
+      <div class="field"><label>${t('match_type')}</label><select name="venueType"><option value="HOME">${t('match_home')}</option><option value="AWAY">${t('match_away')}</option></select></div>
+    </div>
+    <div class="field"><label>${t('match_comp')}</label><input name="competition" placeholder="Süper Lig"></div>
+    <div class="modal-acts"><button type="button" class="btn btn-ghost" onclick="closeModal()">${t('btn_cancel')}</button><button type="submit" class="btn btn-primary">${t('btn_save')}</button></div>
+  </form></div>`);
+}
+async function submitAddMatch(e){
+  e.preventDefault(); const f=e.target;
+  const r=await api('POST','/api/matches',{opponent:f.opponent.value,matchDate:f.matchDate.value+'T'+f.matchTime.value+':00',venue:f.venue.value,venueType:f.venueType.value,competition:f.competition.value,status:'SCHEDULED'});
+  if(r.success){ closeModal(); toast(lang==='TR'?'Maç eklendi!':'Match added!'); loadMatches(); }
+  else toast(r.message||'Hata',true);
+}
+
+// ── TRAINING ──────────────────────────────
+async function loadTraining(){
+  const el=document.getElementById('page-training');
+  el.innerHTML=`<div class="page-title">${t('nav_training')}</div><div class="loading-box"><span class="spin"></span>${t('loading')}</div>`;
+  try{
+    const r=await api('GET','/api/training-sessions?size=100');
+    const items=(r.data?.content)||[];
+    el.innerHTML=`
+      <div class="page-title">${t('nav_training')}</div>
+      <div class="page-sub">${lang==='TR'?'Antrenman takvimi':'Training schedule'}</div>
+      ${canCoach()?`<div style="margin-bottom:16px"><button class="btn btn-primary" onclick="openAddTrainingModal()">${t('train_add')}</button></div>`:''}
+      <div class="table-wrap">
+        ${items.length===0?`<div class="empty-state">${t('no_data')}</div>`:`
+        <table><tr><th>${t('train_date')}</th><th>${lang==='TR'?'Saat':'Time'}</th><th>${t('train_loc')}</th><th>${t('train_focus')}</th><th>${t('train_int')}</th><th>${lang==='TR'?'Oluşturan':'By'}</th></tr>
+        ${items.map(s=>`<tr><td>${s.sessionDate}</td><td>${s.startTime||''} - ${s.endTime||''}</td><td>${s.location||''}</td>
+        <td>${badge('bb',t('f_'+s.focus)||s.focus)}</td>
+        <td>${badge(s.intensity==='HIGH'?'br':s.intensity==='MEDIUM'?'by':'bg',t('i_'+s.intensity)||s.intensity)}</td>
+        <td>${s.createdByUsername||'—'}</td></tr>`).join('')}
+        </table>`}
+      </div>`;
+  }catch(e){ el.innerHTML='<div class="empty-state">Hata</div>'; }
+}
+
+function openAddTrainingModal(){
+  openModal(t('train_add'),`<div class="modal-body"><form onsubmit="submitAddTraining(event)">
+    <div class="form-row">
+      <div class="field"><label>${t('train_date')}</label><input type="date" name="sessionDate" required value="${today()}"></div>
+      <div class="field"><label>${t('train_loc')}</label><input name="location" required placeholder="RAMS Park Antrenman Sahası"></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>${t('train_start')}</label><input type="time" name="startTime" required value="10:00"></div>
+      <div class="field"><label>${t('train_end')}</label><input type="time" name="endTime" required value="12:00"></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>${t('train_focus')}</label><select name="focus"><option value="TACTICAL">${t('f_TACTICAL')}</option><option value="PHYSICAL">${t('f_PHYSICAL')}</option><option value="TECHNICAL">${t('f_TECHNICAL')}</option><option value="RECOVERY">${t('f_RECOVERY')}</option><option value="SET_PIECES">${t('f_SET_PIECES')}</option></select></div>
+      <div class="field"><label>${t('train_int')}</label><select name="intensity"><option value="LOW">${t('i_LOW')}</option><option value="MEDIUM" selected>${t('i_MEDIUM')}</option><option value="HIGH">${t('i_HIGH')}</option></select></div>
+    </div>
+    <div class="field"><label>${t('train_notes')}</label><textarea name="notes"></textarea></div>
+    <div class="modal-acts"><button type="button" class="btn btn-ghost" onclick="closeModal()">${t('btn_cancel')}</button><button type="submit" class="btn btn-primary">${t('btn_save')}</button></div>
+  </form></div>`);
+}
+async function submitAddTraining(e){
+  e.preventDefault(); const f=e.target;
+  const r=await api('POST','/api/training-sessions',{sessionDate:f.sessionDate.value,startTime:f.startTime.value+':00',endTime:f.endTime.value+':00',location:f.location.value,focus:f.focus.value,intensity:f.intensity.value,notes:f.notes.value});
+  if(r.success){ closeModal(); toast(lang==='TR'?'Antrenman eklendi!':'Training added!'); loadTraining(); }
+  else toast(r.message||'Hata',true);
+}
+
+// ── PLAYERS ───────────────────────────────
+let _allPlayers=[], _posFilter='ALL';
+async function loadPlayers(){
+  const el=document.getElementById('page-players');
+  el.innerHTML=`<div class="page-title">${t('nav_players')}</div><div class="loading-box"><span class="spin"></span>${t('loading')}</div>`;
+  try{
+    const players=await getPlayers();
+    _allPlayers=players;
+    renderPlayerGrid(players);
+  }catch(e){ el.innerHTML='<div class="empty-state">Hata</div>'; }
+}
+function renderPlayerGrid(players){
+  const el=document.getElementById('page-players');
+  const positions=['ALL','GOALKEEPER','DEFENDER','MIDFIELDER','FORWARD'];
+  const posLabels={ALL:lang==='TR'?'Tümü':'All',GOALKEEPER:lang==='TR'?'Kaleci':'GK',DEFENDER:lang==='TR'?'Defans':'DEF',MIDFIELDER:lang==='TR'?'Orta Saha':'MID',FORWARD:lang==='TR'?'Forvet':'FWD'};
+  const filtered=_posFilter==='ALL'?players:players.filter(p=>p.position===_posFilter);
+  el.innerHTML=`
+    <div class="page-title">${t('nav_players')}</div>
+    <div class="pos-filters">
+      ${positions.map(pos=>`<button class="pos-filter-btn${_posFilter===pos?' active':''}" onclick="_posFilter='${pos}';renderPlayerGrid(_allPlayers)">${posLabels[pos]} ${pos==='ALL'?'('+players.length+')':'('+players.filter(p=>p.position===pos).length+')'}</button>`).join('')}
+    </div>
+    <div class="page-sub">Galatasaray ${lang==='TR'?'kadrosu':'squad'} — ${filtered.length} ${lang==='TR'?'oyuncu':'players'}</div>
+    <div class="players-grid">
+      ${filtered.map(p=>`<div class="player-card" onclick="showPlayerMenu(event,${p.id})">
+        <img class="player-avatar" src="${p.photoUrl||avatarUrl(p.firstName,p.lastName)}" onerror="this.src='${avatarUrl(p.firstName,p.lastName)}'" alt="${p.firstName}">
+        ${p.jerseyNumber?`<div class="player-jersey">#${p.jerseyNumber}</div>`:''}
+        <div class="player-name">${p.firstName} ${p.lastName}</div>
+        <div class="player-pos">${pBadge(p.position)}</div>
+        <div class="player-stats">
+          <span><strong>${p.nationality||'—'}</strong><span>${t('play_nat')}</span></span>
+          <span><strong>${stars(p.conditionRating)}</strong><span>${t('play_cond')}</span></span>
+        </div>
+        ${p.heightCm||p.weightKg?`<div class="player-stats" style="margin-top:6px">
+          ${p.heightCm?`<span><strong>${p.heightCm}cm</strong><span>${t('play_h')}</span></span>`:''}
+          ${p.weightKg?`<span><strong>${p.weightKg}kg</strong><span>${t('play_w')}</span></span>`:''}
+        </div>`:''}
+      </div>`).join('')}
+    </div>`;
+}
+
+function showPlayerMenu(e, pid){
+  e.stopPropagation();
+  const p=_allPlayers.find(x=>x.id===pid); if(!p) return;
+  const menu=document.getElementById('player-ctx-menu');
+  const TR=lang==='TR';
+  let html=`<div class="ctx-header"><div class="ctx-name">${p.firstName} ${p.lastName}</div><div class="ctx-sub">${p.jerseyNumber?'#'+p.jerseyNumber+' · ':''} ${pBadge(p.position)}</div></div>`;
+  if(canManage()){
+    html+=`<button onclick="closePlayerMenu();openConditionModal(${p.id},${p.conditionRating||3})">⭐ ${TR?'Kondisyon Güncelle':'Update Condition'}</button>`;
+    html+=`<button onclick="closePlayerMenu();openAssignTaskModalFor(${p.id})">📋 ${TR?'Görev Ata':'Assign Task'}</button>`;
+    html+=`<button onclick="closePlayerMenu();openReportInjuryModalFor(${p.id})">🚑 ${TR?'Sakatlık Bildir':'Report Injury'}</button>`;
+    html+=`<div class="ctx-divider"></div>`;
+  } else if(canCoach()){
+    html+=`<button onclick="closePlayerMenu();openAssignTaskModalFor(${p.id})">📋 ${TR?'Görev Ata':'Assign Task'}</button>`;
+    html+=`<button onclick="closePlayerMenu();openReportInjuryModalFor(${p.id})">🚑 ${TR?'Sakatlık Bildir':'Report Injury'}</button>`;
+    html+=`<div class="ctx-divider"></div>`;
+  } else if(isPlayer()&&currentUser.username===p.username){
+    html+=`<button onclick="closePlayerMenu();openConditionModal(${p.id},${p.conditionRating||3})">⭐ ${TR?'Kondisyonumu Güncelle':'Update My Condition'}</button>`;
+    html+=`<div class="ctx-divider"></div>`;
+  }
+  html+=`<button onclick="closePlayerMenu();showPlayerProfile(${p.id})">👤 ${TR?'Profili Görüntüle':'View Profile'}</button>`;
+  menu.innerHTML=html; menu.style.display='block';
+  const rect=e.currentTarget.getBoundingClientRect();
+  let top=rect.bottom+6, left=rect.left;
+  menu.style.top=top+'px'; menu.style.left=left+'px';
+  // keep in viewport
+  requestAnimationFrame(()=>{
+    const mr=menu.getBoundingClientRect();
+    if(mr.right>window.innerWidth) menu.style.left=(window.innerWidth-mr.width-10)+'px';
+    if(mr.bottom>window.innerHeight) menu.style.top=(rect.top-mr.height-6)+'px';
+  });
+}
+function closePlayerMenu(){ document.getElementById('player-ctx-menu').style.display='none'; }
+document.addEventListener('click',()=>closePlayerMenu());
+
+function showPlayerProfile(pid){
+  const p=_allPlayers.find(x=>x.id===pid); if(!p) return;
+  const TR=lang==='TR';
+  const dob=p.dateOfBirth?new Date(p.dateOfBirth).toLocaleDateString(TR?'tr-TR':'en-GB'):'—';
+  const age=p.dateOfBirth?Math.floor((new Date()-new Date(p.dateOfBirth))/31557600000)+'':' —';
+  openModal(`${p.firstName} ${p.lastName}`,`<div class="modal-body">
+    <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap">
+      <img src="${p.photoUrl||avatarUrl(p.firstName,p.lastName)}" onerror="this.src='${avatarUrl(p.firstName,p.lastName)}'" style="width:90px;height:90px;border-radius:50%;border:3px solid #c8102e;object-fit:cover">
+      <div style="flex:1;min-width:160px">
+        <div style="font-size:1.2rem;font-weight:700;margin-bottom:4px">${p.firstName} ${p.lastName}</div>
+        <div style="margin-bottom:10px">${pBadge(p.position)} ${p.jerseyNumber?`<span class="player-jersey">#${p.jerseyNumber}</span>`:''}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:.83rem">
+          <div><span style="color:#94a3b8">${TR?'Milliyet':'Nationality'}</span><br><strong>${p.nationality||'—'}</strong></div>
+          <div><span style="color:#94a3b8">${TR?'Yaş':'Age'}</span><br><strong>${age}</strong></div>
+          <div><span style="color:#94a3b8">${TR?'D.O.B':'D.O.B'}</span><br><strong>${dob}</strong></div>
+          <div><span style="color:#94a3b8">${TR?'Kondisyon':'Condition'}</span><br><strong>${stars(p.conditionRating)}</strong></div>
+          ${p.heightCm?`<div><span style="color:#94a3b8">${TR?'Boy':'Height'}</span><br><strong>${p.heightCm} cm</strong></div>`:''}
+          ${p.weightKg?`<div><span style="color:#94a3b8">${TR?'Kilo':'Weight'}</span><br><strong>${p.weightKg} kg</strong></div>`:''}
+        </div>
+      </div>
+    </div>
+    <div class="modal-acts" style="margin-top:16px">
+      <button class="btn btn-ghost" onclick="closeModal()">${TR?'Kapat':'Close'}</button>
+      ${canManage()?`<button class="btn btn-primary" onclick="closeModal();openConditionModal(${p.id},${p.conditionRating||3})">${TR?'Kondisyon Güncelle':'Update Condition'}</button>`:''}
+      ${canCoach()?`<button class="btn btn-gold" onclick="closeModal();openAssignTaskModalFor(${p.id})">${TR?'Görev Ata':'Assign Task'}</button>`:''}
+    </div>
+  </div>`);
+}
+
+async function openAssignTaskModalFor(preselectedId){
+  if(!allPlayersCache) allPlayersCache=await api('GET','/api/players?size=100').then(r=>r.content);
+  const players=allPlayersCache||[];
+  const TR=lang==='TR';
+  openModal(t('task_assign'),`<div class="modal-body"><form onsubmit="submitTask(event)">
+    <div class="field"><label>${t('task_player')}</label><select name="playerId" required>${players.map(p=>`<option value="${p.id}" ${p.id===preselectedId?'selected':''}>${p.jerseyNumber?'#'+p.jerseyNumber+' ':''} ${p.firstName} ${p.lastName}</option>`).join('')}</select></div>
+    <div class="field"><label>${t('task_title')}</label><input name="title" required placeholder="${TR?'Görev başlığı...':'Task title...'}"></div>
+    <div class="field"><label>${t('task_desc')}</label><textarea name="description" placeholder="${TR?'Görev açıklaması...':'Task description...'}"></textarea></div>
+    <div class="field"><label>${t('task_due')}</label><input type="date" name="dueDate"></div>
+    <div class="field"><label>${t('task_pri')}</label><select name="priority"><option value="LOW">${TR?'Düşük':'Low'}</option><option value="MEDIUM" selected>${TR?'Orta':'Medium'}</option><option value="HIGH">${TR?'Yüksek':'High'}</option></select></div>
+    <div class="modal-acts"><button type="button" class="btn btn-ghost" onclick="closeModal()">${t('btn_cancel')}</button><button type="submit" class="btn btn-primary">${t('btn_save')}</button></div>
+  </form></div>`);
+}
+
+async function openReportInjuryModalFor(preselectedId){
+  if(!allPlayersCache) allPlayersCache=await api('GET','/api/players?size=100').then(r=>r.content);
+  const players=allPlayersCache||[];
+  const TR=lang==='TR';
+  openModal(t('inj_report'),`<div class="modal-body"><form onsubmit="submitInjury(event)">
+    <div class="field"><label>${t('task_player')}</label><select name="playerId" required>${players.map(p=>`<option value="${p.id}" ${p.id===preselectedId?'selected':''}>#${p.jerseyNumber||'?'} ${p.firstName} ${p.lastName}</option>`).join('')}</select></div>
+    <div class="field"><label>${TR?'Sakatlık Türü':'Injury Type'}</label><input name="injuryType" required placeholder="${TR?'ACL, Kas Gerilmesi...':'ACL, Muscle Strain...'}"></div>
+    <div class="field"><label>${TR?'Vücut Bölgesi':'Body Part'}</label><input name="bodyPart" required placeholder="${TR?'Sol Diz, Sağ Ayak...':'Left Knee, Right Foot...'}"></div>
+    <div class="field"><label>${TR?'Açıklama':'Description'}</label><textarea name="description"></textarea></div>
+    <div class="field"><label>${TR?'Sakatlık Tarihi':'Injury Date'}</label><input type="date" name="injuryDate" required value="${new Date().toISOString().split('T')[0]}"></div>
+    <div class="field"><label>${TR?'Tahmini Dönüş':'Est. Return'}</label><input type="date" name="expectedReturnDate"></div>
+    <div class="modal-acts"><button type="button" class="btn btn-ghost" onclick="closeModal()">${t('btn_cancel')}</button><button type="submit" class="btn btn-primary">${t('btn_save')}</button></div>
+  </form></div>`);
+}
+
+function openConditionModal(pid,cur){
+  openModal(t('play_upd'),`<div class="modal-body"><form onsubmit="submitCondition(event,${pid})">
+    <div class="field"><label>${t('play_cond')} (1-5)</label><select name="conditionRating">${[1,2,3,4,5].map(n=>`<option value="${n}" ${n===cur?'selected':''}>${n} ${'⭐'.repeat(n)}</option>`).join('')}</select></div>
+    <div class="field"><label>${lang==='TR'?'Not (isteğe bağlı)':'Note (optional)'}</label><textarea name="conditionNotes" placeholder="${lang==='TR'?'Kondisyonunuzu açıklayın...':'Describe your condition...'}"></textarea></div>
+    <div class="modal-acts"><button type="button" class="btn btn-ghost" onclick="closeModal()">${t('btn_cancel')}</button><button type="submit" class="btn btn-primary">${t('btn_save')}</button></div>
+  </form></div>`);
+}
+async function submitCondition(e,pid){
+  e.preventDefault(); const f=e.target;
+  const r=await api('PATCH',`/api/players/${pid}/condition`,{conditionRating:parseInt(f.conditionRating.value),conditionNotes:f.conditionNotes.value});
+  if(r.success){ closeModal(); allPlayersCache=null; toast(lang==='TR'?'Kondisyon güncellendi!':'Condition updated!'); loadPlayers(); }
+  else toast(r.message||'Hata',true);
+}
+
+// ── MEALS (Weekly Calendar) ────────────────
+async function loadMeals(){
+  const el=document.getElementById('page-meals');
+  el.innerHTML=`<div class="page-title">${t('nav_meals')}</div><div class="loading-box"><span class="spin"></span>${t('loading')}</div>`;
+  try{
+    if(!allMealsCache){ const r=await api('GET','/api/meals?size=600'); allMealsCache=(r.data?.content)||[]; }
+    renderCalendar();
+  }catch(e){ el.innerHTML='<div class="empty-state">Hata</div>'; }
+}
+
+function renderCalendar(){
+  const el=document.getElementById('page-meals');
+  if(!el) return;
+  const dates=getWeekDates(mealWeekOffset);
+  const todayStr=today();
+  const map={};
+  (allMealsCache||[]).forEach(m=>{ if(!map[m.mealDate])map[m.mealDate]={}; map[m.mealDate][m.mealType]=m; });
+  const f=dates[0],l=dates[6];
+  const mn=t('m'+f.getMonth()),mn2=t('m'+l.getMonth());
+  const wLabel=`${f.getDate()} ${mn}${f.getMonth()!==l.getMonth()?' — '+l.getDate()+' '+mn2:' — '+l.getDate()+' '+mn} ${l.getFullYear()}`;
+  const types=['BREAKFAST','LUNCH','DINNER','SNACK'];
+  const icons={BREAKFAST:'☀️',LUNCH:'🌞',DINNER:'🌙',SNACK:'🍎'};
+  el.innerHTML=`
+    <div class="page-title">${t('nav_meals')}</div>
+    <div class="page-sub">${lang==='TR'?'Haftalık beslenme programı':'Weekly nutrition plan'}</div>
+    ${canCoach()?`<div style="margin-bottom:14px"><button class="btn btn-primary" onclick="openAddMealModal()">${t('meal_add')}</button></div>`:''}
+    <div class="week-nav">
+      <button class="btn btn-ghost btn-sm" onclick="mealWeekOffset--;renderCalendar()">${t('meal_prev')}</button>
+      <span class="week-label">📅 ${wLabel}</span>
+      <button class="btn btn-ghost btn-sm" onclick="mealWeekOffset++;renderCalendar()">${t('meal_next')}</button>
+    </div>
+    <div class="cal-wrap">
+    <table class="meal-cal">
+      <tr><th style="width:90px"></th>${dates.map((d,i)=>`<th class="${toDateKey(d)===todayStr?'today-col':''}">${t('d'+i)}<br><span style="font-size:15px;font-weight:700">${d.getDate()}</span></th>`).join('')}</tr>
+      ${types.map(type=>`<tr>
+        <td class="row-label">${icons[type]} ${t('mt_'+type)}</td>
+        ${dates.map(d=>{
+          const dk=toDateKey(d),meal=map[dk]?.[type],isT=dk===todayStr;
+          return `<td class="${isT?'today-col':''}">
+            ${meal?`<div class="cell-desc">${meal.menuDescription}</div>${meal.caloricValue?`<div class="cell-kcal">${meal.caloricValue} kcal`:''}</div>`:`<div class="cell-empty">—</div>`}
+          </td>`;
+        }).join('')}
+      </tr>`).join('')}
+    </table></div>`;
+}
+
+function openAddMealModal(){
+  openModal(t('meal_add'),`<div class="modal-body"><form onsubmit="submitAddMeal(event)">
+    <div class="form-row">
+      <div class="field"><label>${t('meal_date')}</label><input type="date" name="mealDate" required value="${today()}"></div>
+      <div class="field"><label>${t('meal_type')}</label><select name="mealType"><option value="BREAKFAST">${t('mt_BREAKFAST')}</option><option value="LUNCH">${t('mt_LUNCH')}</option><option value="DINNER">${t('mt_DINNER')}</option><option value="SNACK">${t('mt_SNACK')}</option></select></div>
+    </div>
+    <div class="field"><label>${t('meal_menu')}</label><textarea name="menuDescription" required></textarea></div>
+    <div class="form-row">
+      <div class="field"><label>${t('meal_kcal')}</label><input type="number" name="caloricValue" placeholder="650"></div>
+      <div class="field"><label>${t('meal_alg')}</label><input name="allergenInfo" placeholder="${lang==='TR'?'Gluten, Süt...':'Gluten, Dairy...'}"></div>
+    </div>
+    <div class="modal-acts"><button type="button" class="btn btn-ghost" onclick="closeModal()">${t('btn_cancel')}</button><button type="submit" class="btn btn-primary">${t('btn_save')}</button></div>
+  </form></div>`);
+}
+async function submitAddMeal(e){
+  e.preventDefault(); const f=e.target;
+  const body={mealDate:f.mealDate.value,mealType:f.mealType.value,menuDescription:f.menuDescription.value};
+  if(f.caloricValue.value) body.caloricValue=parseInt(f.caloricValue.value);
+  if(f.allergenInfo.value) body.allergenInfo=f.allergenInfo.value;
+  const r=await api('POST','/api/meals',body);
+  if(r.success){ closeModal(); allMealsCache=null; toast(lang==='TR'?'Öğün eklendi!':'Meal added!'); loadMeals(); }
+  else toast(r.message||'Hata',true);
+}
+
+// ── ANNOUNCEMENTS ─────────────────────────
+async function loadAnnouncements(){
+  const el=document.getElementById('page-announcements');
+  el.innerHTML=`<div class="page-title">${t('nav_announcements')}</div><div class="loading-box"><span class="spin"></span>${t('loading')}</div>`;
+  try{
+    const r=await api('GET','/api/announcements');
+    const items=r.data||[];
+    el.innerHTML=`
+      <div class="page-title">${t('nav_announcements')}</div>
+      <div class="page-sub">${lang==='TR'?'Kulüp duyuruları':'Club announcements'}</div>
+      ${canManage()?`<div style="margin-bottom:16px"><button class="btn btn-primary" onclick="openAddAnnModal()">${t('ann_new')}</button></div>`:''}
+      ${items.length===0?`<div class="empty-state">${t('no_data')}</div>`:items.map(a=>`
+        <div class="ann-card">
+          <div class="ann-head">${a.pinned?'📌':'📣'} ${a.title}${a.targetRole?` <span class="badge bb" style="font-size:10px">${a.targetRole.replace(/_/g,' ')}</span>`:''}</div>
+          <div class="ann-body"><p>${a.content}</p><div class="ann-meta">✍️ ${a.createdByUsername||''} · ${fmtDate(a.createdAt)}</div></div>
+        </div>`).join('')}`;
+  }catch(e){ el.innerHTML='<div class="empty-state">Hata</div>'; }
+}
+
+function openAddAnnModal(){
+  openModal(t('ann_new'),`<div class="modal-body"><form onsubmit="submitAddAnn(event)">
+    <div class="field"><label>${t('ann_title')}</label><input name="title" required></div>
+    <div class="field"><label>${t('ann_content')}</label><textarea name="content" required style="min-height:100px"></textarea></div>
+    <div class="form-row">
+      <div class="field"><label>${t('ann_target')}</label><select name="targetRole"><option value="">${lang==='TR'?'Herkes':'Everyone'}</option><option value="PLAYER">${lang==='TR'?'Oyuncular':'Players'}</option><option value="ASSISTANT_COACH">${lang==='TR'?'Asistanlar':'Assistants'}</option><option value="TECHNICAL_DIRECTOR">${lang==='TR'?'Teknik Direktör':'Technical Director'}</option></select></div>
+      <div class="field"><label>${t('ann_pin')}</label><select name="pinned"><option value="false">${lang==='TR'?'Hayır':'No'}</option><option value="true">${lang==='TR'?'Evet':'Yes'}</option></select></div>
+    </div>
+    <div class="modal-acts"><button type="button" class="btn btn-ghost" onclick="closeModal()">${t('btn_cancel')}</button><button type="submit" class="btn btn-primary">${t('btn_save')}</button></div>
+  </form></div>`);
+}
+async function submitAddAnn(e){
+  e.preventDefault(); const f=e.target;
+  const body={title:f.title.value,content:f.content.value,pinned:f.pinned.value==='true'};
+  if(f.targetRole.value) body.targetRole=f.targetRole.value;
+  const r=await api('POST','/api/announcements',body);
+  if(r.success){ closeModal(); toast(lang==='TR'?'Duyuru yayınlandı!':'Published!'); loadAnnouncements(); }
+  else toast(r.message||'Hata',true);
+}
+
+// ── TASKS ─────────────────────────────────
+async function loadTasks(){
+  const el=document.getElementById('page-tasks');
+  el.innerHTML=`<div class="page-title">${t('nav_tasks')}</div><div class="loading-box"><span class="spin"></span>${t('loading')}</div>`;
+  try{
+    const r=await api('GET','/api/tasks?size=100');
+    const items=(r.data?.content)||[];
+    el.innerHTML=`
+      <div class="page-title">${t('nav_tasks')}</div>
+      <div class="page-sub">${lang==='TR'?'Oyuncu görevleri':'Player tasks'}</div>
+      ${canCoach()?`<div style="margin-bottom:16px"><button class="btn btn-primary" onclick="openAssignTaskModal()">${t('task_assign')}</button></div>`:''}
+      <div class="table-wrap">
+        ${items.length===0?`<div class="empty-state">${t('no_data')}</div>`:`
+        <table><tr><th>${t('task_player')}</th><th>${t('task_title')}</th><th>${t('task_due')}</th><th>${t('task_upd')}</th><th>${lang==='TR'?'Atayan':'By'}</th><th>${lang==='TR'?'İşlem':'Action'}</th></tr>
+        ${items.map(task=>`<tr>
+          <td>${task.playerFullName}</td>
+          <td><strong>${task.title}</strong>${task.description?`<br><small style="color:#64748b">${task.description.substring(0,50)}${task.description.length>50?'...':''}</small>`:''}</td>
+          <td>${task.dueDate||'—'}</td>
+          <td>${tBadge(task.status)}</td>
+          <td>${task.assignedByUsername}</td>
+          <td style="white-space:nowrap">
+            ${(task.status==='PENDING'||task.status==='IN_PROGRESS')?`<button class="btn btn-green btn-sm" onclick="submitCompleteTask(${task.id})">${t('task_complete')}</button> `:''}
+            ${canCoach()?`<button class="btn btn-ghost btn-sm" onclick="openUpdateTaskModal(${task.id},'${task.status}')">${t('task_upd')}</button>`:''}
+          </td>
+        </tr>`).join('')}</table>`}
+      </div>`;
+  }catch(e){ el.innerHTML='<div class="empty-state">Hata</div>'; }
+}
+
+function openAssignTaskModal(){ openAssignTaskModalFor(null); }
+async function submitTask(e){
+  e.preventDefault(); const f=e.target;
+  const body={playerId:parseInt(f.playerId.value),title:f.title.value,description:f.description.value};
+  if(f.dueDate?.value) body.dueDate=f.dueDate.value;
+  if(f.priority?.value) body.priority=f.priority.value;
+  const r=await api('POST','/api/tasks',body);
+  if(r.success){ closeModal(); toast(lang==='TR'?'Görev atandı!':'Task assigned!'); loadTasks(); }
+  else toast(r.message||'Hata',true);
+}
+async function submitAssignTask(e){ return submitTask(e); }
+async function submitCompleteTask(id){
+  const r=await api('PATCH',`/api/tasks/${id}/complete`,{});
+  if(r.success){ toast(lang==='TR'?'Görev tamamlandı!':'Task completed!'); loadTasks(); }
+  else toast(r.message||'Hata',true);
+}
+function openUpdateTaskModal(id,cur){
+  openModal(t('task_upd'),`<div class="modal-body">
+    <div class="field"><label>${t('task_upd')}</label><select id="newTaskStatus">
+      <option value="PENDING" ${cur==='PENDING'?'selected':''}>${t('s_PENDING')}</option>
+      <option value="IN_PROGRESS" ${cur==='IN_PROGRESS'?'selected':''}>${t('s_IN_PROGRESS')}</option>
+      <option value="COMPLETED" ${cur==='COMPLETED'?'selected':''}>${t('s_COMPLETED')}</option>
+      <option value="CANCELLED" ${cur==='CANCELLED'?'selected':''}>${t('s_CANCELLED')}</option>
+    </select></div>
+    <div class="modal-acts"><button class="btn btn-ghost" onclick="closeModal()">${t('btn_cancel')}</button><button class="btn btn-primary" onclick="submitUpdateTask(${id})">${t('btn_save')}</button></div>
+  </div>`);
+}
+async function submitUpdateTask(id){
+  const s=document.getElementById('newTaskStatus').value;
+  const r=await api('PATCH',`/api/tasks/${id}/status`,{status:s});
+  if(r.success){ closeModal(); toast(lang==='TR'?'Güncellendi!':'Updated!'); loadTasks(); }
+  else toast(r.message||'Hata',true);
+}
+
+// ── INJURIES ──────────────────────────────
+async function loadInjuries(){
+  const el=document.getElementById('page-injuries');
+  el.innerHTML=`<div class="page-title">${t('nav_injuries')}</div><div class="loading-box"><span class="spin"></span>${t('loading')}</div>`;
+  try{
+    const r=await api('GET','/api/injuries?size=100');
+    const items=(r.data?.content)||[];
+    el.innerHTML=`
+      <div class="page-title">${t('nav_injuries')}</div>
+      <div class="page-sub">${lang==='TR'?'Oyuncu sağlık durumu':'Player health status'}</div>
+      <div style="margin-bottom:16px"><button class="btn btn-primary" onclick="openReportInjuryModal()">${t('inj_report')}</button></div>
+      <div class="table-wrap">
+        ${items.length===0?`<div class="empty-state">🎉 ${lang==='TR'?'Aktif sakatlık yok':'No active injuries'}</div>`:`
+        <table><tr><th>${t('inj_player')}</th><th>${t('inj_type')}</th><th>${t('inj_body')}</th><th>${t('inj_date')}</th><th>${t('inj_ret')}</th><th>${lang==='TR'?'Durum':'Status'}</th><th>${lang==='TR'?'İşlem':'Action'}</th></tr>
+        ${items.map(i=>`<tr>
+          <td>${i.playerFullName}</td><td>${i.injuryType}</td><td>${i.bodyPart||'—'}</td>
+          <td>${i.injuryDate}</td><td>${i.expectedReturnDate||'—'}</td><td>${iBadge(i.status)}</td>
+          <td>${canCoach()?`<button class="btn btn-ghost btn-sm" onclick="openUpdateInjuryModal(${i.id},'${i.status}')">${t('inj_upd')}</button>`:'—'}</td>
+        </tr>`).join('')}</table>`}
+      </div>`;
+  }catch(e){ el.innerHTML='<div class="empty-state">Hata</div>'; }
+}
+
+function openReportInjuryModal(){ openReportInjuryModalFor(null); }
+async function submitReportInjury(e){ return submitInjury(e); }
+async function submitInjury(e){
+  e.preventDefault(); const f=e.target;
+  const body={playerId:parseInt(f.playerId.value),injuryType:f.injuryType.value,bodyPart:f.bodyPart.value,description:f.description?.value||'',injuryDate:f.injuryDate.value};
+  if(f.expectedReturnDate?.value) body.expectedReturnDate=f.expectedReturnDate.value;
+  const r=await api('POST','/api/injuries',body);
+  if(r.success){ closeModal(); toast(lang==='TR'?'Sakatlık kaydedildi!':'Injury reported!'); loadInjuries(); }
+  else toast(r.message||'Hata',true);
+}
+function openUpdateInjuryModal(id,cur){
+  openModal(t('inj_upd'),`<div class="modal-body">
+    <div class="field"><label>${lang==='TR'?'Yeni Durum':'New Status'}</label><select id="newInjuryStatus">
+      <option value="ACTIVE" ${cur==='ACTIVE'?'selected':''}>${t('s_ACTIVE')}</option>
+      <option value="UNDER_TREATMENT" ${cur==='UNDER_TREATMENT'?'selected':''}>${t('s_UNDER_TREATMENT')}</option>
+      <option value="RECOVERED" ${cur==='RECOVERED'?'selected':''}>${t('s_RECOVERED')}</option>
+    </select></div>
+    <div class="modal-acts"><button class="btn btn-ghost" onclick="closeModal()">${t('btn_cancel')}</button><button class="btn btn-primary" onclick="submitUpdateInjury(${id})">${t('btn_save')}</button></div>
+  </div>`);
+}
+async function submitUpdateInjury(id){
+  const s=document.getElementById('newInjuryStatus').value;
+  const r=await api('PATCH',`/api/injuries/${id}/status`,{status:s});
+  if(r.success){ closeModal(); toast(lang==='TR'?'Güncellendi!':'Updated!'); loadInjuries(); }
+  else toast(r.message||'Hata',true);
+}
+
+// ── LEAVE REQUESTS ────────────────────────
+async function loadLeaves(){
+  const el=document.getElementById('page-leaves');
+  el.innerHTML=`<div class="page-title">${t('nav_leaves')}</div><div class="loading-box"><span class="spin"></span>${t('loading')}</div>`;
+  try{
+    const r=await api('GET','/api/leave-requests?size=100');
+    const items=(r.data?.content)||[];
+    el.innerHTML=`
+      <div class="page-title">${t('nav_leaves')}</div>
+      <div class="page-sub">${lang==='TR'?'İzin başvuruları':'Leave applications'}</div>
+      <div style="margin-bottom:16px"><button class="btn btn-primary" onclick="openApplyLeaveModal()">${t('leave_apply')}</button></div>
+      <div class="table-wrap">
+        ${items.length===0?`<div class="empty-state">${t('no_data')}</div>`:`
+        <table><tr><th>${lang==='TR'?'Kullanıcı':'User'}</th><th>${t('leave_reason')}</th><th>${t('leave_start')}</th><th>${t('leave_end')}</th><th>${lang==='TR'?'Durum':'Status'}</th><th>${lang==='TR'?'İnceleyen':'Reviewer'}</th><th>${lang==='TR'?'İşlem':'Action'}</th></tr>
+        ${items.map(l=>`<tr>
+          <td>${l.requestedByUsername}</td>
+          <td>${l.reason.substring(0,40)}${l.reason.length>40?'...':''}</td>
+          <td>${l.startDate}</td><td>${l.endDate}</td>
+          <td>${lBadge(l.status)}</td>
+          <td>${l.reviewedByUsername||'—'}</td>
+          <td>${canManage()&&l.status==='PENDING'?`<button class="btn btn-gold btn-sm" onclick="openReviewLeaveModal(${l.id},'${l.requestedByUsername}','${l.reason.replace(/'/g,"\\'")}','${l.startDate}','${l.endDate}')">${t('leave_review')}</button>`:'—'}</td>
+        </tr>`).join('')}</table>`}
+      </div>`;
+  }catch(e){ el.innerHTML='<div class="empty-state">Hata</div>'; }
+}
+
+function openApplyLeaveModal(){
+  openModal(t('leave_apply'),`<div class="modal-body"><form onsubmit="submitApplyLeave(event)">
+    <div class="field"><label>${t('leave_reason')}</label><textarea name="reason" required style="min-height:80px" placeholder="${lang==='TR'?'İzin gerekçenizi yazın...':'State your reason...'}"></textarea></div>
+    <div class="form-row">
+      <div class="field"><label>${t('leave_start')}</label><input type="date" name="startDate" required value="${today()}"></div>
+      <div class="field"><label>${t('leave_end')}</label><input type="date" name="endDate" required value="${today()}"></div>
+    </div>
+    <div class="modal-acts"><button type="button" class="btn btn-ghost" onclick="closeModal()">${t('btn_cancel')}</button><button type="submit" class="btn btn-primary">${t('btn_save')}</button></div>
+  </form></div>`);
+}
+async function submitApplyLeave(e){
+  e.preventDefault(); const f=e.target;
+  const r=await api('POST','/api/leave-requests',{reason:f.reason.value,startDate:f.startDate.value,endDate:f.endDate.value});
+  if(r.success){ closeModal(); toast(lang==='TR'?'İzin talebi oluşturuldu!':'Leave request submitted!'); loadLeaves(); }
+  else toast(r.message||'Hata',true);
+}
+function openReviewLeaveModal(id,uname,reason,start,end){
+  openModal(t('leave_review'),`<div class="modal-body">
+    <div style="background:#0f172a;border-radius:8px;padding:14px;margin-bottom:16px">
+      <p style="font-size:13px;margin-bottom:6px"><strong>${uname}</strong></p>
+      <p style="font-size:12px;color:#94a3b8">${reason}</p>
+      <p style="font-size:12px;color:#64748b;margin-top:8px">📅 ${start} → ${end}</p>
+    </div>
+    <div class="field"><label>${t('leave_note')}</label><textarea id="reviewNote" placeholder="${lang==='TR'?'İnceleme notu...':'Review note...'}"></textarea></div>
+    <div class="modal-acts">
+      <button class="btn btn-ghost" onclick="closeModal()">${t('btn_cancel')}</button>
+      <button class="btn" style="background:#ef4444;color:#fff" onclick="submitReviewLeave(${id},'REJECTED')">${t('leave_reject')}</button>
+      <button class="btn btn-primary" onclick="submitReviewLeave(${id},'APPROVED')">${t('leave_approve')}</button>
+    </div>
+  </div>`);
+}
+async function submitReviewLeave(id,status){
+  const note=document.getElementById('reviewNote')?.value||'';
+  const r=await api('PUT',`/api/leave-requests/${id}/review`,{status,reviewNote:note});
+  if(r.success){ closeModal(); toast(status==='APPROVED'?(lang==='TR'?'Onaylandı!':'Approved!'):(lang==='TR'?'Reddedildi.':'Rejected.')); loadLeaves(); }
+  else toast(r.message||'Hata',true);
+}
+
+// ── USERS ─────────────────────────────────
+async function loadUsers(){
+  const el=document.getElementById('page-users');
+  el.innerHTML=`<div class="page-title">${t('nav_users')}</div><div class="loading-box"><span class="spin"></span>${t('loading')}</div>`;
+  try{
+    const r=await api('GET','/api/admin/users?size=100');
+    const items=(r.data?.content)||[];
+    el.innerHTML=`
+      <div class="page-title">${t('nav_users')}</div>
+      <div class="page-sub">${lang==='TR'?'Sistem kullanıcıları':'System users'} (ADMIN)</div>
+      <div class="table-wrap">
+        <div class="table-head"><h3>${lang==='TR'?'Kullanıcılar':'Users'} (${items.length})</h3></div>
+        <table><tr><th>ID</th><th>${lang==='TR'?'Kullanıcı Adı':'Username'}</th><th>Email</th><th>${lang==='TR'?'Rol':'Role'}</th><th>${lang==='TR'?'Durum':'Status'}</th><th>${lang==='TR'?'Kayıt':'Created'}</th></tr>
+        ${items.map(u=>`<tr>
+          <td style="color:#64748b">#${u.id}</td>
+          <td><strong>${u.username}</strong></td>
+          <td style="color:#94a3b8">${u.email}</td>
+          <td><span class="role-badge role-${u.role}">${u.role.replace(/_/g,' ')}</span></td>
+          <td>${u.enabled?badge('bg',lang==='TR'?'Aktif':'Active'):badge('br',lang==='TR'?'Pasif':'Inactive')}</td>
+          <td style="color:#64748b">${fmtDate(u.createdAt)}</td>
+        </tr>`).join('')}
+        </table>
+      </div>`;
+  }catch(e){ el.innerHTML='<div class="empty-state">Hata</div>'; }
+}
+</script>
+<div id="player-ctx-menu" class="player-ctx-menu"></div>
+</body>
+</html>

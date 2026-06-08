@@ -51,7 +51,8 @@ public class DataInitializer {
             // Use verified fallback squad (TheSportsDB free tier returns wrong team data for GS)
             List<GalatasarayApiService.PlayerData> squad = gsApi.getFallbackSquad();
             List<Player> players = new ArrayList<>();
-            int[] conditions = {5, 4, 4, 5, 4, 4, 3, 5, 5, 4, 4, 4, 2, 5, 3};
+            // Conditions for 22 players (2025-26 squad order — Icardi=2 injured, others 4-5)
+            int[] conditions = {5, 4, 4, 5, 5, 4, 4, 5, 5, 5, 5, 4, 4, 4, 4, 2, 5, 4, 5, 4, 5, 4};
 
             for (int i = 0; i < squad.size(); i++) {
                 GalatasarayApiService.PlayerData pd = squad.get(i);
@@ -164,18 +165,19 @@ public class DataInitializer {
                         .build());
             }
 
-            Player zaha = players.stream()
-                    .filter(p -> "Zaha".equalsIgnoreCase(p.getLastName()))
+            // Torreira – muscle strain (minor)
+            Player torreira = players.stream()
+                    .filter(p -> "Torreira".equalsIgnoreCase(p.getLastName()))
                     .findFirst().orElse(null);
-            if (zaha != null) {
+            if (torreira != null) {
                 injuryRepo.save(InjuryReport.builder()
-                        .player(zaha)
+                        .player(torreira)
                         .reportedBy(assistant)
                         .injuryType("Kas Gerilmesi")
-                        .bodyPart("Sol Hamstring")
-                        .description("Antrenmanda hafif hamstring gerilmesi. Kısa süreli dinlenme önerildi.")
-                        .injuryDate(LocalDate.now().minusDays(5))
-                        .expectedReturnDate(LocalDate.now().plusDays(7))
+                        .bodyPart("Sağ Uyluk")
+                        .description("Antrenmanda hafif uyluk gerilmesi. Kısa süreli dinlenme önerildi.")
+                        .injuryDate(LocalDate.now().minusDays(3))
+                        .expectedReturnDate(LocalDate.now().plusDays(5))
                         .status(InjuryStatus.UNDER_TREATMENT)
                         .build());
             }

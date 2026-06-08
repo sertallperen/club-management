@@ -167,23 +167,35 @@ public class GalatasarayApiService {
         return "MIDFIELDER";
     }
 
+    // 2025-2026 Season Squad
     public List<PlayerData> getFallbackSquad() {
         return Arrays.asList(
-            new PlayerData("Fernando",    "Muslera",      1,  "GOALKEEPER", "Uruguayan",    "1986-06-16", 188.0, 84.0, null),
-            new PlayerData("Günay",       "Güvenç",      35,  "GOALKEEPER", "Turkish",      "2001-04-04", 189.0, 81.0, null),
-            new PlayerData("Davinson",    "Sánchez",      4,  "DEFENDER",   "Colombian",    "1996-06-12", 192.0, 84.0, null),
-            new PlayerData("Victor",      "Nelsson",      5,  "DEFENDER",   "Danish",       "1998-05-14", 188.0, 82.0, null),
-            new PlayerData("Abdülkerim",  "Bardakcı",     6,  "DEFENDER",   "Turkish",      "1994-09-21", 186.0, 84.0, null),
-            new PlayerData("Kaan",        "Ayhan",       17,  "DEFENDER",   "Turkish",      "1994-10-10", 188.0, 83.0, null),
-            new PlayerData("Patrick",     "van Aanholt",  3,  "DEFENDER",   "Dutch",        "1990-08-29", 179.0, 74.0, null),
-            new PlayerData("Lucas",       "Torreira",     8,  "MIDFIELDER", "Uruguayan",    "1996-02-11", 166.0, 62.0, null),
-            new PlayerData("Dries",       "Mertens",      7,  "MIDFIELDER", "Belgian",      "1987-05-06", 169.0, 61.0, null),
-            new PlayerData("Hakim",       "Ziyech",      22,  "MIDFIELDER", "Moroccan",     "1993-03-19", 181.0, 72.0, null),
-            new PlayerData("Kerem",       "Aktürkoğlu", 77,  "MIDFIELDER", "Turkish",      "1998-03-31", 182.0, 77.0, null),
-            new PlayerData("Yunus",       "Akgün",       14,  "MIDFIELDER", "Turkish",      "2000-02-16", 180.0, 74.0, null),
+            // ── Goalkeepers ──────────────────────────────────────────────
+            new PlayerData("Uğurcan",     "Çakır",        1,  "GOALKEEPER", "Turkish",      "1996-04-11", 189.0, 83.0, null),
+            new PlayerData("Günay",       "Güvenç",      19,  "GOALKEEPER", "Turkish",      "2001-04-04", 189.0, 81.0, null),
+            // ── Defenders ────────────────────────────────────────────────
+            new PlayerData("Muhammed",    "Baltacı",      3,  "DEFENDER",   "Turkish",      "2002-04-08", 186.0, 78.0, null),
+            new PlayerData("Ismail",      "Jakobs",       4,  "DEFENDER",   "Senegalese",   "1999-08-17", 182.0, 75.0, null),
+            new PlayerData("Davinson",    "Sánchez",      6,  "DEFENDER",   "Colombian",    "1996-06-12", 192.0, 84.0, null),
+            new PlayerData("Eren",        "Elmalı",      17,  "DEFENDER",   "Turkish",      "2001-03-23", 179.0, 72.0, null),
+            new PlayerData("Kaan",        "Ayhan",       23,  "DEFENDER",   "Turkish",      "1994-10-10", 188.0, 83.0, null),
+            new PlayerData("Abdülkerim",  "Bardakcı",    42,  "DEFENDER",   "Turkish",      "1994-09-21", 186.0, 84.0, null),
+            new PlayerData("Wilfried",    "Singo",       90,  "DEFENDER",   "Ivorian",      "2000-12-25", 185.0, 80.0, null),
+            // ── Midfielders ───────────────────────────────────────────────
+            new PlayerData("Gabriel",     "Sara",         8,  "MIDFIELDER", "Brazilian",    "1999-11-10", 174.0, 69.0, null),
+            new PlayerData("İlkay",       "Gündoğan",    20,  "MIDFIELDER", "German",       "1990-10-24", 180.0, 80.0, null),
+            new PlayerData("Yáser",       "Asprilla",    22,  "MIDFIELDER", "Colombian",    "2002-07-21", 175.0, 66.0, null),
+            new PlayerData("Lucas",       "Torreira",    34,  "MIDFIELDER", "Uruguayan",    "1996-02-11", 166.0, 62.0, null),
+            new PlayerData("Mario",       "Lemina",      99,  "MIDFIELDER", "Gabonese",     "1993-05-01", 184.0, 80.0, null),
+            // ── Forwards ──────────────────────────────────────────────────
+            new PlayerData("Roland",      "Sallai",       7,  "FORWARD",    "Hungarian",    "1997-05-22", 182.0, 76.0, null),
             new PlayerData("Mauro",       "Icardi",       9,  "FORWARD",    "Argentinian",  "1993-02-19", 181.0, 82.0, null),
-            new PlayerData("Barış Alper", "Yılmaz",      10,  "FORWARD",    "Turkish",      "2000-07-26", 180.0, 73.0, null),
-            new PlayerData("Wilfried",    "Zaha",        11,  "FORWARD",    "Ivorian",      "1992-11-10", 180.0, 76.0, null)
+            new PlayerData("Leroy",       "Sané",        10,  "FORWARD",    "German",       "1996-01-11", 183.0, 75.0, null),
+            new PlayerData("Yunus",       "Akgün",       11,  "FORWARD",    "Turkish",      "2000-02-16", 180.0, 74.0, null),
+            new PlayerData("Victor",      "Osimhen",     45,  "FORWARD",    "Nigerian",     "1998-12-29", 186.0, 78.0, null),
+            new PlayerData("Noa",         "Lang",        77,  "FORWARD",    "Dutch",        "1999-06-07", 173.0, 68.0, null),
+            new PlayerData("Barış Alper", "Yılmaz",      53,  "FORWARD",    "Turkish",      "2000-07-26", 180.0, 73.0, null),
+            new PlayerData("Sacha",       "Boey",        93,  "DEFENDER",   "French",       "2000-11-05", 175.0, 69.0, null)
         );
     }
 }
