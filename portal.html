@@ -559,13 +559,18 @@ async function loadPlayers(){
     renderPlayerGrid(players);
   }catch(e){ el.innerHTML='<div class="empty-state">Hata</div>'; }
 }
+let _playerSearch='';
 function renderPlayerGrid(players){
   const el=document.getElementById('page-players');
   const positions=['ALL','GOALKEEPER','DEFENDER','MIDFIELDER','FORWARD'];
   const posLabels={ALL:lang==='TR'?'Tümü':'All',GOALKEEPER:lang==='TR'?'Kaleci':'GK',DEFENDER:lang==='TR'?'Defans':'DEF',MIDFIELDER:lang==='TR'?'Orta Saha':'MID',FORWARD:lang==='TR'?'Forvet':'FWD'};
-  const filtered=_posFilter==='ALL'?players:players.filter(p=>p.position===_posFilter);
+  let filtered=_posFilter==='ALL'?players:players.filter(p=>p.position===_posFilter);
+  if(_playerSearch) filtered=filtered.filter(p=>(p.firstName+' '+p.lastName).toLowerCase().includes(_playerSearch.toLowerCase())||(p.nationality||'').toLowerCase().includes(_playerSearch.toLowerCase()));
   el.innerHTML=`
     <div class="page-title">${t('nav_players')}</div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
+      <input id="player-search-input" type="text" placeholder="${lang==='TR'?'🔍 İsim veya milliyet ara...':'🔍 Search name or nationality...'}" value="${_playerSearch}" oninput="_playerSearch=this.value;renderPlayerGrid(_allPlayers)" style="flex:1;min-width:200px;padding:7px 12px;border-radius:8px;border:1px solid #334155;background:#1e293b;color:#f1f5f9;font-size:.85rem">
+    </div>
     <div class="pos-filters">
       ${positions.map(pos=>`<button class="pos-filter-btn${_posFilter===pos?' active':''}" onclick="_posFilter='${pos}';renderPlayerGrid(_allPlayers)">${posLabels[pos]} ${pos==='ALL'?'('+players.length+')':'('+players.filter(p=>p.position===pos).length+')'}</button>`).join('')}
     </div>

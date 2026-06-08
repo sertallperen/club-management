@@ -16,30 +16,34 @@ A complete, production-ready REST API backend for managing a football club — b
 
 ---
 
-## Setup & Running
+## Quick Start
 
 ### Prerequisites
 - Java 17+
 - Maven 3.8+
 
-### Run (H2 in-memory, no setup needed)
+### 1. Run the backend
 ```bash
-cd club-management
 mvn spring-boot:run
 ```
+The API starts on **http://localhost:8080**
 
-The app starts on **http://localhost:8080**
+### 2. Open the portal (optional frontend)
+Open `portal.html` in your browser — no build step, no dependencies.
 
-### API Documentation (Swagger)
-```
-http://localhost:8080/swagger-ui.html
-```
+### 3. Explore the API
+| URL | Description |
+|---|---|
+| **http://localhost:8080/swagger-ui.html** | Interactive API docs (try all endpoints) |
+| http://localhost:8080/h2-console | H2 database browser (dev only) |
 
-### H2 Console (dev only)
+> **Swagger tip:** Click **Authorize** → enter `Bearer <token>` (get token from `POST /api/auth/login` first)
+
+### H2 Console credentials
 ```
-http://localhost:8080/h2-console
-JDBC URL: jdbc:h2:mem:clubdb
-Username: sa   Password: (empty)
+JDBC URL : jdbc:h2:mem:clubdb
+Username : sa
+Password : (leave empty)
 ```
 
 ### PostgreSQL (optional)
