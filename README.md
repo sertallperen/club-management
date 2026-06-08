@@ -58,13 +58,13 @@ Uncomment the PostgreSQL lines in `application.properties` and comment out the H
 | `admin` | `admin123` | ADMIN |
 | `terim.fatih` | `terim123` | TECHNICAL_DIRECTOR (Fatih Terim) |
 | `ercan.abdullah` | `assist123` | ASSISTANT_COACH |
-| `cakir.ugurcan` | `player123` | PLAYER |
-| `osimhen.victor` | `player123` | PLAYER |
-| `gundogan.ilkay` | `player123` | PLAYER |
-| `sane.leroy` | `player123` | PLAYER |
-| `icardi.mauro` | `player123` | PLAYER |
+| `cakir.ugurcan` | `cakir123` | PLAYER |
+| `osimhen.victor` | `osimhen123` | PLAYER |
+| `gundogan.ilkay` | `gundogan123` | PLAYER |
+| `sane.leroy` | `sane123` | PLAYER |
+| `icardi.mauro` | `icardi123` | PLAYER |
 
-> All player accounts follow the format `lastname.firstname@gsapp.com`
+> All player accounts follow the format `lastname.firstname` / password: `lastname123`
 
 ---
 

@@ -57,7 +57,8 @@ public class DataInitializer {
             for (int i = 0; i < squad.size(); i++) {
                 GalatasarayApiService.PlayerData pd = squad.get(i);
                 String username = toUsername(pd.getFirstName(), pd.getLastName());
-                User u = save(userRepo, username, username + "@gsapp.com", "player123", RoleName.PLAYER);
+                String password = normalize(pd.getLastName()) + "123"; // e.g. cakir123, osimhen123
+                User u = save(userRepo, username, username + "@gsapp.com", password, RoleName.PLAYER);
 
                 LocalDate dob = null;
                 if (pd.getDateOfBirth() != null && !pd.getDateOfBirth().isBlank()) {
